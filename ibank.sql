@@ -5,6 +5,8 @@
 -- Dumped from database version 12.3
 -- Dumped by pg_dump version 12.3
 
+
+
 SET statement_timeout = 0;
 SET lock_timeout = 0;
 SET idle_in_transaction_session_timeout = 0;
@@ -329,6 +331,8 @@ COPY public.adresse_c (id_adresse, rue, code_postal, ville, pays) FROM stdin;
 29	les chenes          	95000	Pontoise            	France              
 30	les chenes          	78000	Paris               	France              
 31	Ceinture            	95000	Cergy               	France              
+32	Ceinture            	95000	Cergy               	France              
+33	les chenes          	95000	Cergy               	France              
 \.
 
 
@@ -357,6 +361,8 @@ COPY public.client (id_client, num_tel, civilite, id_adresse) FROM stdin;
 42	75678987	Mme       	29
 43	6789076	Mme       	30
 44	781288986	Mr        	31
+45	6789756	Mr        	32
+46	681286686	Mme       	33
 \.
 
 
@@ -365,13 +371,13 @@ COPY public.client (id_client, num_tel, civilite, id_adresse) FROM stdin;
 --
 
 COPY public.compte (id, num_compte, credi_compte, status_compte, iban, cle_rib, num_carte, secret_code, id_client, date_ouverture) FROM stdin;
-37	1022984462	1867	1	1449849224	219	880387302	732	40	2020-12-02
 39	1953654335	3300	1	1611091850	465	291506	145	37	2020-12-02
 40	582887126	3149	1	985644790	603	966828737	239	38	2020-12-02
 41	1587863322	659	1	448803986	139	963354900	741	41	2020-12-02
 43	1538302284	0	1	1104765874	88	665372659	945	42	2020-12-03
 42	1366306108	1389	1	1060750178	882	162737278	622	36	2020-12-02
 38	1660361707	1400	1	1754568006	353	1196102329	672	39	2020-12-02
+37	1022984462	2167	1	1449849224	219	880387302	732	40	2020-12-02
 \.
 
 
@@ -389,6 +395,9 @@ COPY public.depot_argent (id_dep, montant_dept) FROM stdin;
 55	259
 56	1500
 58	500
+67	0
+68	0
+69	300
 \.
 
 
@@ -423,6 +432,9 @@ COPY public.operation (num_opera, statu_opera, montant, num_compte_debit, num_co
 64	1	500	40	38	2020-12-03	Transfert 
 65	1	600	41	38	2020-12-03	Transfert 
 66	1	1234	38	42	2020-12-03	Transfert 
+67	1	0	\N	37	2020-12-03	Depot     
+68	1	0	\N	37	2020-12-03	Depot     
+69	1	300	\N	37	2020-12-03	Depot     
 \.
 
 
@@ -475,14 +487,73 @@ COPY public.utilisateur (id, prenom, nom, mail_utili, type_utili, created_at, us
 43	Diouf	Fatoumata	fatou@gmail.com	0	2020-12-03	0	12345               
 44	Douno	Emmanuel	douno@gmail.com	0	2020-12-03	0	12345               
 42	Diallo	kadi	kadi@gmail.com	0	2020-12-03	1	12345               
+45	Kadi	Diouf	diouf@gmail.com	0	2020-12-03	0	12345               
+46	Kadi	diouf	diouf2@gmail.com	0	2020-12-03	0	12345               
 \.
+
+-- 9 Requête SQL les plus significatives explication données dans le rapport
+
+-- 1
+SELECT tochar(date_opera, 'Mon') as mon,
+       extract(year from date_opera) as yyyy, 
+       sum("montant") as "Transaction"
+From operation 
+Group by 1,2
+
+--- 2
+
+SELECT * FROM utilisateur JOIN client ON utilisateur.id = client.id_client
+JOIN adresse_c ON client.id_adresse = adresse_c.id_adresse 
+WHERE user_status = 0 AND type_utili = 0
+
+--- 2
+
+SELECT * FROM utilisateur JOIN client ON utilisateur.id = client.id_client
+JOIN adresse_c ON client.id_adresse = adresse_c.id_adresse WHERE user_status = 1
+
+--- 3
+
+SELECT type_opera,  count(num_opera) as numbre_de_Transaction, sum(montant) as Montant_totak 
+                  FROM operation group by type_opera;
+
+--- 4
+SELECT type_opera, avg(num_opera), avg(montant),date_opera FROM operation 
+GROUP BY  DATE(date_opera),  type_opera ORDER BY date_opera DESC
+
+--- 5
+
+SELECT  count(id) as nombre, created_at ,  adresse_c.ville
+FROM public.utilisateur JOIN client ON utilisateur.id = client.id_client 
+JOIN adresse_c ON client.id_adresse = adresse_c.id_adresse
+GROUP BY  DATE(created_at), adresse_c.ville
+ORDER BY created_at DESC
+
+
+--- 6
+SELECT * FROM operation WHERE num_compte_debit = 12 OR  num_compte_credit = 12
+
+
+-- 7
+
+SELECT * FROM utilisateur WHERE mail_utili = diakite@gmail.com AND password = 12345
+
+-- 8
+Select * from adresse_c 
+WHERE id_adresse = (SELECT id_adresse FROM client WHERE id_adresse = 24)
+
+-- 9
+
+SELECT type_opera, num_opera, montant FROM operation type_opera ORDER BY date_opera DESC
+
+
+
 
 
 --
 -- Name: adresse_c_id_adresse_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('public.adresse_c_id_adresse_seq', 31, true);
+SELECT pg_catalog.setval('public.adresse_c_id_adresse_seq', 33, true);
 
 
 --
@@ -503,14 +574,14 @@ SELECT pg_catalog.setval('public.compte_id_seq', 43, true);
 -- Name: operation_num_opera_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('public.operation_num_opera_seq', 66, true);
+SELECT pg_catalog.setval('public.operation_num_opera_seq', 69, true);
 
 
 --
 -- Name: utilisateur_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('public.utilisateur_id_seq', 44, true);
+SELECT pg_catalog.setval('public.utilisateur_id_seq', 46, true);
 
 
 --
