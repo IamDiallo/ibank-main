@@ -475,19 +475,14 @@ COPY public.transfert_argent (id_trans, montant_trans, libelle_trans, compt_envo
 -- Data for Name: utilisateur; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.utilisateur (id, prenom, nom, mail_utili, type_utili, created_at, user_status, password) FROM stdin;
-34	Mamadou	Diallo	belladialloamd@gmail.com	1	2020-12-02	0	12345               
-40	John	Ali	ali@gmail.com	0	2020-12-02	1	1234rt              
-39	Fatta	Diawara	diawara@gmail.com	0	2020-12-02	1	12345               
+COPY public.utilisateur (id, prenom, nom, mail_utili, type_utili, created_at, user_status, password) FROM stdin;            
+40	John	Ali	ali@gmail.com	0	2020-12-02	1	1234rt                         
 37	Wilshere	Jack	jack@gmail.com	0	2020-12-02	1	12345               
 38	Moubouche	Miriam	miriam@gmail.com	0	2020-12-02	1	123rgt              
-41	Daniel	Peter	peter@gmail.com	0	2020-12-02	1	1234rt              
-35	Emma	Saint-Hubert	emma@gmail.com	1	2020-11-26	0	12345               
+41	Daniel	Peter	peter@gmail.com	0	2020-12-02	1	1234rt                      
 36	Smith	Will	will@gmail.com	0	2020-11-26	1	12345               
 43	Diouf	Fatoumata	fatou@gmail.com	0	2020-12-03	0	12345               
-44	Douno	Emmanuel	douno@gmail.com	0	2020-12-03	0	12345               
-42	Diallo	kadi	kadi@gmail.com	0	2020-12-03	1	12345               
-45	Kadi	Diouf	diouf@gmail.com	0	2020-12-03	0	12345               
+44	Douno	Emmanuel	douno@gmail.com	0	2020-12-03	0	12345                          
 46	Kadi	diouf	diouf2@gmail.com	0	2020-12-03	0	12345               
 \.
 
